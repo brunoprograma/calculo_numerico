@@ -38,7 +38,7 @@ def iteracoes(a, b, precisao):
     Returns:
         int: Teto sob o número de iterações calculado
     """
-    num_iter = (log(b-a) - log(precisao)) / log(2)
+    num_iter = (log10(b-a) - log10(precisao)) / log10(2)
     return ceil(num_iter)
 
 
@@ -98,7 +98,3 @@ Março/2018
     b = float(eval(input("Digite o valor de 'b': ")))
     precisao = float(eval(input("Digite a precisão do cálculo: ")))
     bisseccao(funcao_str, a, b, precisao)
-
-    
-    
-    
