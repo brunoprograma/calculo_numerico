@@ -1,4 +1,4 @@
-"""==========
+"""
 Implementação do Método da Bissecção
 Autor: Bruno Ribeiro
 Universidade Federal da Fronteira Sul - UFFS
@@ -6,9 +6,23 @@ Curso de Ciência da Computação
 CCR: Cálculo Numérico
 Professor: Paulo Boesing
 Março/2018
-=========="""
-
+"""
 from math import *
+
+
+def erro_relativo(x_atual, x_anterior):
+    """
+    Calcula o erro relativo entre as iterações da bissecção
+
+    Args:
+        x_atual (float): valor de x na iteração atual
+        x_anterior (float): valor de x na iteração anterior
+
+    Returns:
+        float: Valor do erro relativo calculado
+    """
+    return abs(x_atual - x_anterior)/abs(x_atual)
+
 
 def funcao(x, funcao_str):
     """
@@ -50,14 +64,18 @@ def sinal(x):
 
 
 def bisseccao(funcao_str, a, b, precisao):
+    i, x_anterior, erro_rel = 1, 0, precisao
     num_iteracoes = iteracoes(a, b, precisao)
     print("A precisão {} exige {} iterações da bissecção.".format(precisao, num_iteracoes))
 
-    for i in range(1, num_iteracoes+1):
+    # condições de parada: n. de iterações e erro relativo < precisão
+    while i < num_iteracoes+1 and erro_rel >= precisao:
         x = a + ((b - a)/2)
-        print("a%d ="%i, a, "b%d ="%i, b, "x%d ="%i, x)
+        erro_rel = erro_relativo(x, x_anterior)
+        x_anterior = x
+        print("a%d ="%i, a, "b%d ="%i, b, "x%d ="%i, x, "Erro rel.: {}".format(erro_rel))
         f_a, f_b, f_x = funcao(a, funcao_str), funcao(b, funcao_str), funcao(x, funcao_str)
-
+            
         if sinal(f_a)*sinal(f_b) < 0:
             # talvez um dos termos aplicados à função já seja uma raiz
             if f_a == 0:
@@ -75,6 +93,9 @@ def bisseccao(funcao_str, a, b, precisao):
                 b = x
             else:
                 a = x
+
+            # incrementa iterações
+            i += 1
         else:
             print("A bissecção terminou sem encontrar quaisquer raízes no intervalo [a,b] = [{}, {}].".format(a, b))
             return
