@@ -9,6 +9,8 @@ Março/2018
 """
 from math import *
 
+# limite de iteracoes quando o algoritmo não especifica
+N_MAX = 1000
 
 def erro_relativo(x_atual, x_anterior):
     """
@@ -64,6 +66,15 @@ def sinal(x):
 
 
 def bisseccao(funcao_str, a, b, precisao):
+    """
+    Realiza a bissecção tentando encontrar a raiz aproximada de uma função
+
+    Args:
+        funcao_str (string): string da função na sintaxe python 3
+        a (float): limite inferior do intervalo
+        b (float): limite superior do intervalo
+        precisao (float): precisão estabelecida
+    """
     i, x_anterior, erro_rel = 1, 0, precisao
     num_iteracoes = iteracoes(a, b, precisao)
     print("A precisão {} exige {} iterações da bissecção.".format(precisao, num_iteracoes))
@@ -97,11 +108,72 @@ def bisseccao(funcao_str, a, b, precisao):
             # incrementa iterações
             i += 1
         else:
-            print("A bissecção terminou sem encontrar quaisquer raízes no intervalo [a,b] = [{}, {}].".format(a, b))
+            print("A execução terminou sem encontrar quaisquer raízes.")
             return
 
     print("Execução da bissecção concluída!")
     print("Uma das raízes possíveis da função '{}' está no intervalo [a,b] = [{}, {}].".format(funcao_str, a, b))
+
+
+def newton(funcao_str, derivada_str, p0, precisao, N=N_MAX):
+    """
+    Busca uma raiz aproximada de uma função através do método de Newton
+
+    Args:
+        funcao_str (string): string da função na sintaxe python 3
+        derivada_str (string): string da derivada da função anterior na sintaxe python 3
+        p0 (float): chute inicial
+        precisao (float): precisão estabelecida
+    """
+    i, p_anterior, erro_rel = 1, p0, precisao
+
+    # condições de parada: n. de iterações e erro relativo < precisão
+    while erro_rel >= precisao:
+        if i < N+1:
+            p = p_anterior - (funcao(p_anterior, funcao_str)/funcao(p_anterior, derivada_str))
+            erro_rel = erro_relativo(p, p_anterior)
+
+            print("p{} =".format(i-1), p_anterior, "p{} =".format(i), p, "Erro rel.: {}".format(erro_rel))
+            p_anterior = p
+            
+            # incrementa iterações
+            i += 1
+        else:
+            print("A execução terminou sem encontrar quaisquer raízes.")
+            return
+
+    print("Execução de Newton concluída!")
+    print("Uma das raízes possíveis da função '{}' é {}.".format(funcao_str, p))
+
+
+def ponto_fixo(funcao_str, p0, precisao, N=N_MAX):
+    """
+    Busca uma raiz aproximada de uma função através do método do ponto fixo
+
+    Args:
+        funcao_str (string): string da função de iteração na sintaxe python 3
+        p0 (float): chute inicial
+        precisao (float): precisão estabelecida
+    """
+    i, p_anterior, erro_rel = 1, p0, precisao
+
+    # condições de parada: n. de iterações e erro relativo < precisão
+    while erro_rel >= precisao:
+        if i < N+1:
+            p = funcao(p_anterior, funcao_str)
+            erro_rel = erro_relativo(p, p_anterior)
+
+            print("p{} =".format(i-1), p_anterior, "p{} =".format(i), p, "Erro rel.: {}".format(erro_rel))
+            p_anterior = p
+            
+            # incrementa iterações
+            i += 1
+        else:
+            print("A execução terminou sem encontrar quaisquer raízes.")
+            return
+
+    print("Execução de ponto fixo concluída!")
+    print("Uma das raízes possíveis da função '{}' é {}.".format(funcao_str, p))
         
 
 if __name__ == "__main__":
@@ -114,8 +186,33 @@ CCR: Cálculo Numérico
 Professor: Paulo Boesing
 Março/2018
 ==========""")
-    funcao_str = input("Digite a função a ser resolvida (sintaxe Python 3): ")
-    a = float(eval(input("Digite o valor de 'a': ")))
-    b = float(eval(input("Digite o valor de 'b': ")))
-    precisao = float(eval(input("Digite a precisão do cálculo: ")))
-    bisseccao(funcao_str, a, b, precisao)
+    menu = 5
+    while menu not in range(4):
+        menu = int(eval(input("Digite a opção desejada:\n1 - Bissecção\n2 - Ponto Fixo\n3 - Newton\n0 - Sair\nOpção: ")))
+        
+        if menu == 1:
+            funcao_str = input("Digite a função a ser resolvida (sintaxe Python 3): ")
+            a = float(eval(input("Digite o valor de 'a': ")))
+            b = float(eval(input("Digite o valor de 'b': ")))
+            precisao = float(eval(input("Digite a precisão do cálculo: ")))
+            bisseccao(funcao_str, a, b, precisao)
+            menu = 5 # restart
+        elif menu == 2:
+            funcao_str = input("Digite a função de iteração (sintaxe Python 3): ")
+            p0 = float(eval(input("Digite o chute inicial 'p0': ")))
+            precisao = float(eval(input("Digite a precisão do cálculo: ")))
+            n = int(eval(input("Digite o número máximo de iterações: ")))
+            ponto_fixo(funcao_str, p0, precisao, n)
+            menu = 5 # restart
+        elif menu == 3:
+            funcao_str = input("Digite a função a ser resolvida (sintaxe Python 3): ")
+            derivada_str = input("Digite a derivada da função (sintaxe Python 3): ")
+            p0 = float(eval(input("Digite o chute inicial 'p0': ")))
+            precisao = float(eval(input("Digite a precisão do cálculo: ")))
+            n = int(eval(input("Digite o número máximo de iterações: ")))            
+            newton(funcao_str, derivada_str, p0, precisao, n)
+            menu = 5 # restart
+        elif menu == 0:
+            print("Saindo...")
+        else:
+            menu = 5 # restart
